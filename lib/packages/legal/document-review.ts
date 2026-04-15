@@ -26,7 +26,7 @@ export async function reviewDocument(
   _config: Record<string, unknown> = {}
 ): Promise<{ output: DocumentReviewOutput; tokensUsed: number }> {
   const { output, usage } = await generateText({
-    model: anthropic('claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: ReviewSchema }),
     system: `You are an expert legal document reviewer. Analyze contracts and legal documents for risks, key terms, and issues. Be thorough but concise. Always include a disclaimer that this is AI-assisted analysis, not legal advice.`,
     prompt: `Review the following legal document and provide a structured risk analysis:\n\n${documentText}`,
