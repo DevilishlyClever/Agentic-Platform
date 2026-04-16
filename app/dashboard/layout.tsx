@@ -1,10 +1,10 @@
-import { redirect } from 'next/navigation'
 import { getSessionClient } from '@/lib/session'
 import { logoutAction } from './login/actions'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const client = await getSessionClient()
-  if (!client) redirect('/dashboard/login')
+  // Keep login page reachable. Individual protected pages already enforce auth.
+  if (!client) return <>{children}</>
 
   return (
     <div style={styles.shell}>
