@@ -1,4 +1,5 @@
-import { generateText, Output, gateway } from 'ai'
+import { generateText, Output } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const OfferSchema = z.object({
@@ -31,17 +32,11 @@ export async function compareOffers(
   _config: Record<string, unknown> = {}
 ): Promise<{ output: OfferCompareOutput; tokensUsed: number }> {
   const { output, usage } = await generateText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: OfferSchema }),
     system: `You are an expert real estate transaction analyst. Compare purchase offers objectively, weighing price, financing strength, contingencies, and timeline. Help sellers make informed decisions.`,
     prompt: `Compare these ${offers.length} offers on the property:\n\nProperty: ${JSON.stringify(propertyDetails, null, 2)}\n\nOffers:\n${JSON.stringify(offers, null, 2)}`,
     maxOutputTokens: 3000,
-    providerOptions: {
-      gateway: {
-        user: clientId,
-        tags: ['vertical:real_estate', 'package:offer_compare'],
-      },
-    },
   })
 
   return {

@@ -1,4 +1,5 @@
-import { generateText, Output, gateway } from 'ai'
+import { generateText, Output } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const LeadSchema = z.object({
@@ -28,17 +29,11 @@ export async function qualifyLead(
     .join('\n')
 
   const { output, usage } = await generateText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: LeadSchema }),
     system: `You are an expert real estate lead qualification specialist. Analyze lead conversations to score quality and readiness. Look for signals: timeline urgency, financing readiness, motivation, and decision authority.`,
     prompt: `Qualify this real estate lead based on the conversation:\n\n${transcript}`,
     maxOutputTokens: 2000,
-    providerOptions: {
-      gateway: {
-        user: clientId,
-        tags: ['vertical:real_estate', 'package:lead_qualify'],
-      },
-    },
   })
 
   return {

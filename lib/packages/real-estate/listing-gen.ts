@@ -1,4 +1,5 @@
-import { generateText, Output, gateway } from 'ai'
+import { generateText, Output } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const ListingSchema = z.object({
@@ -17,17 +18,11 @@ export async function generateListing(
   _config: Record<string, unknown> = {}
 ): Promise<{ output: ListingGenOutput; tokensUsed: number }> {
   const { output, usage } = await generateText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: ListingSchema }),
     system: `You are an expert real estate copywriter. Create compelling, accurate, and MLS-compliant property descriptions. Focus on lifestyle appeal while being factually accurate. Avoid fair housing violations.`,
     prompt: `Generate a complete listing package for this property:\n\n${JSON.stringify(propertyData, null, 2)}`,
     maxOutputTokens: 2000,
-    providerOptions: {
-      gateway: {
-        user: clientId,
-        tags: ['vertical:real_estate', 'package:listing_gen'],
-      },
-    },
   })
 
   return {

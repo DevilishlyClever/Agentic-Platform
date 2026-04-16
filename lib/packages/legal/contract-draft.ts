@@ -1,4 +1,5 @@
-import { generateText, Output, gateway } from 'ai'
+import { generateText, Output } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const DraftSchema = z.object({
@@ -20,17 +21,11 @@ export async function draftContract(
   _config: Record<string, unknown> = {}
 ): Promise<{ output: ContractDraftOutput; tokensUsed: number }> {
   const { output, usage } = await generateText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: DraftSchema }),
     system: `You are an expert legal drafting assistant. Draft contract sections based on templates and parameters. Flag all items requiring attorney review. Never present AI-generated content as final legal documents.`,
     prompt: `Draft a ${templateType} contract with the following parameters:\n${JSON.stringify(parameters, null, 2)}`,
     maxOutputTokens: 6000,
-    providerOptions: {
-      gateway: {
-        user: clientId,
-        tags: ['vertical:legal', 'package:contract_draft'],
-      },
-    },
   })
 
   return {

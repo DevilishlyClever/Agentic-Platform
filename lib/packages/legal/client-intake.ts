@@ -1,4 +1,5 @@
-import { generateText, Output, gateway } from 'ai'
+import { generateText, Output } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const IntakeSchema = z.object({
@@ -27,17 +28,11 @@ export async function processClientIntake(
   _config: Record<string, unknown> = {}
 ): Promise<{ output: ClientIntakeOutput; tokensUsed: number }> {
   const { output, usage } = await generateText({
-    model: gateway('anthropic/claude-sonnet-4.6'),
+    model: anthropic('claude-sonnet-4-6'),
     output: Output.object({ schema: IntakeSchema }),
     system: `You are a legal intake specialist. Extract and structure information from client intake forms to prepare case files for attorneys. Be precise with names, dates, and facts. Always flag items for conflict-of-interest checks.`,
     prompt: `Process this client intake form and extract structured case information:\n\n${JSON.stringify(formData, null, 2)}`,
     maxOutputTokens: 3000,
-    providerOptions: {
-      gateway: {
-        user: clientId,
-        tags: ['vertical:legal', 'package:client_intake'],
-      },
-    },
   })
 
   return {
