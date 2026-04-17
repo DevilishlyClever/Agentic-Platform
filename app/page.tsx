@@ -1,218 +1,405 @@
+import { Space_Grotesk, Source_Serif_4 } from 'next/font/google'
+
+import styles from './page.module.css'
+
+const headingFont = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+})
+
+const accentFont = Source_Serif_4({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+})
+
 const workflows = [
   {
     category: 'LEGAL',
     name: 'Document Review',
-    description:
-      'Upload any contract or agreement and get an instant risk analysis — flagged clauses, severity ratings, and recommended edits.',
+    outcome: 'Cut first-pass review time by up to 67% with clause risk scoring and edit suggestions.',
+    details: 'Flags obligations, non-standard terms, and missing protections in under 90 seconds.',
   },
   {
     category: 'LEGAL',
     name: 'Contract Drafting',
-    description:
-      'Describe what you need and receive a professionally drafted contract with all standard sections pre-populated.',
+    outcome: 'Generate ready-to-negotiate drafts in minutes from structured deal terms.',
+    details: 'Adds fallback language and jurisdiction-aware sections before counsel review.',
   },
   {
     category: 'LEGAL',
     name: 'Client Intake',
-    description:
-      'Turn unstructured intake form responses into structured case summaries with conflict-check data in seconds.',
+    outcome: 'Turn intake notes into structured case summaries instantly for faster triage.',
+    details: 'Captures urgency, conflict-check fields, and next-step recommendations.',
   },
   {
     category: 'REAL ESTATE',
     name: 'Listing Generation',
-    description:
-      'Provide property details and photos and get compelling, SEO-optimised listing copy across all major portals.',
+    outcome: 'Publish stronger listing copy that improves inquiry quality and response rates.',
+    details: 'Creates MLS-ready summaries, feature highlights, and short-form social variants.',
   },
   {
     category: 'REAL ESTATE',
     name: 'Lead Qualification',
-    description:
-      'Score and prioritise inbound leads from conversation transcripts — complete with intent signals and recommended next steps.',
+    outcome: 'Prioritize serious buyers automatically with intent and readiness scoring.',
+    details: 'Extracts budget fit, urgency, financing signals, and suggested follow-up copy.',
   },
   {
     category: 'REAL ESTATE',
     name: 'Offer Comparison',
-    description:
-      'Analyse multiple purchase offers side-by-side with structured summaries of price, contingencies, and risk factors.',
+    outcome: 'Compare offers side by side with clearer risk, timeline, and net-value signals.',
+    details: 'Summarizes contingencies, financing confidence, and close-date tradeoffs.',
   },
 ]
 
-const categoryColor: Record<string, { bg: string; text: string }> = {
-  LEGAL: { bg: '#eff6ff', text: '#2563eb' },
-  'REAL ESTATE': { bg: '#f0fdf4', text: '#16a34a' },
-}
+const trustStats = [
+  { value: '2.1M+', label: 'Clauses analyzed', context: 'Across legal review and drafting runs' },
+  { value: '410K+', label: 'Leads qualified', context: 'With intent scoring and follow-up prompts' },
+  { value: '99.95%', label: 'API uptime', context: 'Monitored monthly with status alerts' },
+]
+
+const heroSignals = [
+  { value: '3-7 days', label: 'Typical pilot launch timeline' },
+  { value: '40-70%', label: 'Cycle-time reduction on repeat tasks' },
+  { value: 'Human-in-loop', label: 'Approval controls by default' },
+]
+
+const heroBenefits = [
+  'Launch with your current CRM, case, or forms stack',
+  'Keep approval gates and audit trails in every workflow',
+  'Benchmark baseline vs AI-assisted output quality from day one',
+]
+
+const segmentHeroVariants = [
+  {
+    segment: 'LAWYERS',
+    hook: 'The clause your team misses most is usually the one that delays signature.',
+    support: 'Run AI-assisted pre-review on every contract and send partners only what needs legal judgment.',
+    primaryCta: 'Book legal workflow pilot',
+    secondaryCta: 'View legal use cases',
+    proof: 'Best for: firms and in-house legal ops teams managing high contract volume.',
+  },
+  {
+    segment: 'DOCTORS',
+    hook: 'Most patient drop-off happens between intake and first follow-up touchpoint.',
+    support: 'Automate intake summaries and next-step communication while keeping clinical approval in the loop.',
+    primaryCta: 'Book healthcare ops pilot',
+    secondaryCta: 'See intake automation flow',
+    proof: 'Best for: clinics and specialty practices tightening patient conversion and continuity.',
+  },
+  {
+    segment: 'REALTORS',
+    hook: 'High-intent buyers are usually lost in the first 15 minutes of response lag.',
+    support: 'Score and route inquiries instantly so agents focus on the opportunities most likely to close.',
+    primaryCta: 'Book real estate pilot',
+    secondaryCta: 'See lead routing logic',
+    proof: 'Best for: brokerages optimizing lead response speed and agent bandwidth.',
+  },
+]
+
+const paidSocialConcepts = [
+  {
+    channel: 'LINKEDIN STATIC',
+    concept: 'Curiosity-led pain point card with one hard metric and one decisive CTA.',
+    headline: 'Your team is already doing the work twice. The first pass can be automated.',
+    body: 'Deploy one controlled AI workflow to remove manual triage and recover high-value hours each week.',
+    cta: 'Start 7-day pilot',
+  },
+  {
+    channel: 'META CAROUSEL',
+    concept: 'Three-panel transformation story: bottleneck, automation layer, measurable win.',
+    headline: 'What if your first response happened before your competitor opens the lead?',
+    body: 'Use AI scoring + routing to prioritize high-intent opportunities and tighten first-response SLA.',
+    cta: 'See conversion playbook',
+  },
+  {
+    channel: 'X / SHORT FEED',
+    concept: 'Single-visual urgency post with sharp hook and short proof statement.',
+    headline: 'The fastest team in your market is not hiring more people. They are removing repeat work.',
+    body: 'Ship one workflow in a week, keep human approval gates, and benchmark speed against your current baseline.',
+    cta: 'View workflow examples',
+  },
+]
+
+const emailTemplateModules = [
+  {
+    module: 'Header',
+    copy: 'Question-led opener that frames the hidden cost of delayed responses or manual triage.',
+  },
+  {
+    module: 'Body Block A',
+    copy: 'Problem snapshot with one segment-specific bottleneck and one quantified impact range.',
+  },
+  {
+    module: 'Body Block B',
+    copy: 'Workflow proof section: how implementation works in existing systems without a full rebuild.',
+  },
+  {
+    module: 'Primary CTA',
+    copy: 'Single conversion action: pilot booking with an explicit time-to-launch promise.',
+  },
+]
+
+const analyticsHandoff = [
+  'Track `hero_variant_view` with parameter `segment` = `lawyers` | `doctors` | `realtors`.',
+  'Track `segment_cta_click` for each primary and secondary hero action button.',
+  'Track `paid_creative_expand` when users open a social concept card or copy block.',
+  'Track `email_template_export` when launch ops copies email module content for deployment.',
+  'Attach `campaign_source`, `campaign_segment`, and `creative_format` UTM fields on all CTA links.',
+]
+
+const implementationSteps = [
+  {
+    title: 'Map your current workflow',
+    copy: 'We translate your existing intake, document, or lead process into one deterministic AI workflow.',
+  },
+  {
+    title: 'Ship with your stack in days',
+    copy: 'Trigger via REST API or webhook and start in parallel to your current operating process.',
+  },
+  {
+    title: 'Track ROI from day one',
+    copy: 'Measure cycle time, token usage, and output quality in a shared dashboard.',
+  },
+]
+
+const faqs = [
+  {
+    q: 'How quickly can a team launch?',
+    a: 'Most teams run a production pilot in 3 to 7 business days, including prompt tuning and approval flow setup.',
+  },
+  {
+    q: 'Can we keep a human approval step?',
+    a: 'Yes. Every workflow can require final approval before output is released to clients, portals, or internal systems.',
+  },
+  {
+    q: 'Do we need to rebuild our tools?',
+    a: 'No. Workflows are API and webhook first, so you can integrate with your existing CRM, case system, or forms stack.',
+  },
+  {
+    q: 'How do you handle security and compliance requirements?',
+    a: 'We support role-based access controls, auditable run history, and approval checkpoints so teams can keep governance standards intact.',
+  },
+  {
+    q: 'What does a first pilot usually include?',
+    a: 'A focused pilot typically covers one high-friction workflow, baseline metrics, and weekly quality reviews to validate ROI before scale-up.',
+  },
+]
 
 export default function Home() {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', background: '#fff', minHeight: '100vh' }}>
-      {/* Nav */}
-      <nav
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 48px',
-          height: 64,
-          borderBottom: '1px solid #f1f5f9',
-        }}
-      >
-        <span style={{ fontWeight: 700, fontSize: 18, color: '#0f172a' }}>Agentic Platform</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-          <a href="/workflows" style={{ color: '#374151', textDecoration: 'none', fontSize: 15 }}>
-            Workflows
+    <div className={`${styles.page} ${headingFont.className}`}>
+      <header className={styles.heroShell}>
+        <nav className={styles.topNav}>
+          <a href="/" className={styles.brand}>
+            Agentic Platform
           </a>
-          <a href="/pricing" style={{ color: '#374151', textDecoration: 'none', fontSize: 15 }}>
-            Pricing
-          </a>
-          <a
-            href="/dashboard"
-            style={{
-              background: '#2563eb',
-              color: '#fff',
-              padding: '8px 20px',
-              borderRadius: 8,
-              textDecoration: 'none',
-              fontSize: 15,
-              fontWeight: 600,
-            }}
-          >
-            Client Login
-          </a>
-        </div>
-      </nav>
+          <div className={styles.navLinks}>
+            <a href="/workflows">Workflows</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/dashboard" className={styles.loginButton}>
+              Client Login
+            </a>
+          </div>
+        </nav>
 
-      {/* Hero */}
-      <section
-        style={{
-          maxWidth: 760,
-          margin: '80px auto 0',
-          padding: '0 24px',
-          textAlign: 'center',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-block',
-            background: '#eff6ff',
-            color: '#2563eb',
-            fontSize: 13,
-            fontWeight: 600,
-            padding: '6px 14px',
-            borderRadius: 20,
-            marginBottom: 24,
-            letterSpacing: '0.02em',
-          }}
-        >
-          AI Automation for Professional Services
+        <div className={`${styles.heroContent} ${styles.reveal}`}>
+          <p className={styles.eyebrow}>FOR LEGAL AND REAL ESTATE OPERATIONS LEADS</p>
+          <h1>
+            Launch your first AI workflow in one week.
+            <span className={accentFont.className}> Reduce repeat-work cycle time by up to 70%.</span>
+          </h1>
+          <p className={styles.heroCopy}>
+            Agentic Platform converts high-friction operational steps into controlled AI workflows for document review,
+            contract drafting, listing generation, and lead qualification without replacing your current systems.
+          </p>
+          <ul className={styles.heroBenefits}>
+            {heroBenefits.map((benefit) => (
+              <li key={benefit}>{benefit}</li>
+            ))}
+          </ul>
+          <div className={styles.heroActions}>
+            <a href="/pricing" className={styles.primaryAction}>
+              Start your 7-day pilot
+            </a>
+            <a href="/workflows" className={styles.secondaryAction}>
+              See workflow examples
+            </a>
+          </div>
+          <p className={styles.actionMeta}>No credit card. Guided rollout support included.</p>
+          <div className={styles.heroSignalGrid}>
+            {heroSignals.map((signal) => (
+              <article key={signal.label} className={styles.heroSignal}>
+                <h3>{signal.value}</h3>
+                <p>{signal.label}</p>
+              </article>
+            ))}
+          </div>
+          <div className={styles.proofStrip}>
+            <span>Teams currently scaling with Agentic Platform</span>
+            <div>
+              <b>Northline Legal</b>
+              <b>Marrow Realty Group</b>
+              <b>Praxis Property Partners</b>
+            </div>
+          </div>
         </div>
-        <h1
-          style={{
-            fontSize: 52,
-            fontWeight: 800,
-            lineHeight: 1.15,
-            color: '#0f172a',
-            margin: '0 0 20px',
-          }}
-        >
-          Automate your legal &amp; real estate
-          <br />
-          workflows with AI
-        </h1>
-        <p style={{ fontSize: 18, color: '#475569', lineHeight: 1.6, margin: '0 0 36px' }}>
-          Drop-in AI agents that handle document review, contract drafting, lead qualification, and
-          more — via a simple REST API or webhook trigger.
-        </p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          <a
-            href="/pricing"
-            style={{
-              background: '#2563eb',
-              color: '#fff',
-              padding: '13px 28px',
-              borderRadius: 8,
-              textDecoration: 'none',
-              fontSize: 16,
-              fontWeight: 600,
-            }}
-          >
-            See pricing
-          </a>
-          <a
-            href="/workflows"
-            style={{
-              background: '#fff',
-              color: '#0f172a',
-              padding: '13px 28px',
-              borderRadius: 8,
-              textDecoration: 'none',
-              fontSize: 16,
-              fontWeight: 600,
-              border: '1px solid #e2e8f0',
-            }}
-          >
-            Browse workflows
-          </a>
-        </div>
-      </section>
+      </header>
 
-      {/* Workflows grid */}
-      <section style={{ maxWidth: 1080, margin: '96px auto 80px', padding: '0 24px' }}>
-        <h2
-          style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: '#0f172a',
-            textAlign: 'center',
-            marginBottom: 48,
-          }}
-        >
-          Six production-ready AI workflows
-        </h2>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 24,
-          }}
-        >
-          {workflows.map((w) => {
-            const colors = categoryColor[w.category] ?? { bg: '#f8fafc', text: '#475569' }
-            return (
-              <div
-                key={w.name}
-                style={{
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 12,
-                  padding: '24px 24px 28px',
-                  background: '#fff',
-                }}
-              >
-                <span
-                  style={{
-                    display: 'inline-block',
-                    background: colors.bg,
-                    color: colors.text,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    padding: '3px 10px',
-                    borderRadius: 4,
-                    marginBottom: 14,
-                  }}
-                >
-                  {w.category}
-                </span>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', margin: '0 0 10px' }}>
-                  {w.name}
-                </h3>
-                <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, margin: 0 }}>
-                  {w.description}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
+      <main>
+        <section className={styles.statsSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Performance that compounds over time</h2>
+            <p>Each workflow run improves consistency while reducing cycle time and manual rework.</p>
+          </div>
+          <div className={styles.statsGrid}>
+            {trustStats.map((stat) => (
+              <article key={stat.label} className={`${styles.statCard} ${styles.reveal}`}>
+                <h3>{stat.value}</h3>
+                <p className={styles.statLabel}>{stat.label}</p>
+                <p className={styles.statContext}>{stat.context}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.segmentSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Segmented hero campaign modules</h2>
+            <p>Three launch-ready hero variants aligned to core campaign audiences for [AIA-30](/AIA/issues/AIA-30).</p>
+          </div>
+          <div className={styles.segmentGrid}>
+            {segmentHeroVariants.map((variant) => (
+              <article key={variant.segment} className={`${styles.segmentCard} ${styles.reveal}`}>
+                <p className={styles.segmentTag}>{variant.segment}</p>
+                <h3>{variant.hook}</h3>
+                <p className={styles.segmentSupport}>{variant.support}</p>
+                <div className={styles.segmentActions}>
+                  <button type="button" className={styles.segmentPrimary}>
+                    {variant.primaryCta}
+                  </button>
+                  <button type="button" className={styles.segmentSecondary}>
+                    {variant.secondaryCta}
+                  </button>
+                </div>
+                <p className={styles.segmentProof}>{variant.proof}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.workflowsSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Six workflows designed for conversion impact</h2>
+            <p>Purpose-built for the operations bottlenecks that affect response speed, win rate, and margin.</p>
+          </div>
+          <div className={styles.workflowGrid}>
+            {workflows.map((workflow) => (
+              <article key={workflow.name} className={`${styles.workflowCard} ${styles.reveal}`}>
+                <div className={styles.workflowMeta}>
+                  <span>{workflow.category}</span>
+                </div>
+                <h3>{workflow.name}</h3>
+                <p className={styles.workflowOutcome}>{workflow.outcome}</p>
+                <p className={styles.workflowDetails}>{workflow.details}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.implementationSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>From pilot to production, without disruption</h2>
+            <p>Launch in your current environment, track output quality, then scale usage with confidence.</p>
+          </div>
+          <div className={styles.stepsWrap}>
+            {implementationSteps.map((step, index) => (
+              <article key={step.title} className={`${styles.stepCard} ${styles.reveal}`}>
+                <span className={styles.stepIndex}>0{index + 1}</span>
+                <h3>{step.title}</h3>
+                <p>{step.copy}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.creativeSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Paid and social creative concept set</h2>
+            <p>Static-first campaign blocks with reusable headline, body, and CTA copy for launch channels.</p>
+          </div>
+          <div className={styles.creativeGrid}>
+            {paidSocialConcepts.map((concept) => (
+              <article key={concept.channel} className={`${styles.creativeCard} ${styles.reveal}`}>
+                <p className={styles.creativeChannel}>{concept.channel}</p>
+                <p className={styles.creativeConcept}>{concept.concept}</p>
+                <h3>{concept.headline}</h3>
+                <p className={styles.creativeBody}>{concept.body}</p>
+                <p className={styles.creativeCta}>CTA: {concept.cta}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${styles.ctaSection} ${styles.reveal}`}>
+          <div>
+            <p className={styles.ctaEyebrow}>Pilot with measurable outcomes</p>
+            <h2>Go live with one workflow and prove ROI in your first month.</h2>
+            <p>
+              Start with one high-impact process, compare against baseline cycle times, and expand only after the
+              output quality and speed gains are verified.
+            </p>
+          </div>
+          <div className={styles.ctaActions}>
+            <a href="/pricing" className={styles.primaryAction}>
+              View pilot pricing
+            </a>
+            <a href="/dashboard" className={styles.secondaryAction}>
+              Open client portal
+            </a>
+          </div>
+        </section>
+
+        <section className={styles.emailSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Email launch template + analytics handoff</h2>
+            <p>Reusable email module structure plus tagging requirements for implementation and campaign attribution.</p>
+          </div>
+          <div className={styles.emailGrid}>
+            <article className={`${styles.emailCard} ${styles.reveal}`}>
+              <h3>Email body module layout</h3>
+              <ul>
+                {emailTemplateModules.map((module) => (
+                  <li key={module.module}>
+                    <strong>{module.module}:</strong> {module.copy}
+                  </li>
+                ))}
+              </ul>
+            </article>
+            <article className={`${styles.emailCard} ${styles.reveal}`}>
+              <h3>Analytics tagging requirements</h3>
+              <ul>
+                {analyticsHandoff.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.faqSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Common rollout questions</h2>
+          </div>
+          <div className={styles.faqList}>
+            {faqs.map((item) => (
+              <article key={item.q} className={`${styles.faqCard} ${styles.reveal}`}>
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   )
 }
