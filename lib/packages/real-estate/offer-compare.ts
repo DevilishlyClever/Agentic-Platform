@@ -12,7 +12,7 @@ const OfferSchema = z.object({
     contingencies: z.array(z.string()),
     closingTimeline: z.string(),
     earnestMoney: z.string(),
-    score: z.number().min(0).max(100).describe('Overall offer strength score'),
+    score: z.number().describe('Overall offer strength score 0-100'),
     strengths: z.array(z.string()),
     weaknesses: z.array(z.string()),
   })),

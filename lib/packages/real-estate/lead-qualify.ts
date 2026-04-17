@@ -3,7 +3,7 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 
 const LeadSchema = z.object({
-  score: z.number().min(0).max(100).describe('Lead quality score 0-100'),
+  score: z.number().describe('Lead quality score 0-100'),
   tier: z.enum(['hot', 'warm', 'cold']).describe('Lead tier classification'),
   buyerProfile: z.object({
     priceRange: z.string(),
