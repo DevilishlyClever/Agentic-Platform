@@ -247,6 +247,7 @@
 .creativeSection,
 .implementationSection,
 .emailSection,
+.waveSection,
 .faqSection {
   border: 1px solid rgba(19, 37, 54, 0.12);
   border-radius: 24px;
@@ -435,6 +436,35 @@
   font-weight: 600;
 }
 
+.segmentSlotBlock {
+  border: 1px dashed #bed2e3;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 10px;
+}
+
+.segmentSlotTitle {
+  margin: 0;
+  color: #2a536f;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.segmentSlotList {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.segmentSlotList li {
+  color: #3f627a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.77rem;
+  line-height: 1.4;
+}
+
 .creativeSection {
   background:
     radial-gradient(circle at 95% 2%, rgba(15, 127, 113, 0.08), transparent 35%),
@@ -531,6 +561,56 @@
   color: #48667d;
   font-size: 0.88rem;
   line-height: 1.5;
+}
+
+.waveSection {
+  background:
+    radial-gradient(circle at 5% 0%, rgba(15, 127, 113, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(248, 253, 251, 0.9), rgba(255, 255, 255, 0.97));
+}
+
+.waveGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.waveGrid + .waveGrid {
+  margin-top: 14px;
+}
+
+.waveCard {
+  border: 1px solid #d3e6dc;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.waveCard h3 {
+  margin: 0 0 10px;
+  color: #173d51;
+  font-size: 1.02rem;
+}
+
+.waveCard ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.waveCard li {
+  color: #3d6175;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.waveMeta {
+  display: block;
+  margin-top: 4px;
+  color: #4f7386;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .stepsWrap {
@@ -677,6 +757,7 @@
   .creativeSection,
   .implementationSection,
   .emailSection,
+  .waveSection,
   .faqSection,
   .ctaSection {
     padding: 28px;
@@ -688,6 +769,7 @@
   .creativeGrid,
   .stepsWrap,
   .emailGrid,
+  .waveGrid,
   .faqList,
   .heroSignalGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -728,6 +810,7 @@
   .creativeGrid,
   .stepsWrap,
   .emailGrid,
+  .waveGrid,
   .faqList,
   .heroSignalGrid {
     grid-template-columns: 1fr;
@@ -748,6 +831,7 @@
   .creativeSection,
   .implementationSection,
   .emailSection,
+  .waveSection,
   .faqSection,
   .ctaSection {
     border-radius: 18px;

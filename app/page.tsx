@@ -1,6 +1,7 @@
 import { Space_Grotesk, Source_Serif_4 } from 'next/font/google'
 
 import styles from './page.module.css'
+import LeadCaptureForm from './components/LeadCaptureForm'
 
 const headingFont = Space_Grotesk({
   subsets: ['latin'],
@@ -72,27 +73,36 @@ const heroBenefits = [
 const segmentHeroVariants = [
   {
     segment: 'LAWYERS',
+    leadSegment: 'lawyer' as const,
     hook: 'The clause your team misses most is usually the one that delays signature.',
     support: 'Run AI-assisted pre-review on every contract and send partners only what needs legal judgment.',
-    primaryCta: 'Book legal workflow pilot',
-    secondaryCta: 'View legal use cases',
+    primaryCta: 'Book legal demo',
+    secondaryCta: 'Join legal waitlist',
     proof: 'Best for: firms and in-house legal ops teams managing high contract volume.',
+    copySlots: ['H1-LAW-v{week}', 'SUB-LAW-v{week}', 'PROOF-LAW-v{week}', 'CTA-LAW-v{week}'],
+    utmCampaign: 'aia30-legal',
   },
   {
     segment: 'DOCTORS',
+    leadSegment: 'doctor' as const,
     hook: 'Most patient drop-off happens between intake and first follow-up touchpoint.',
     support: 'Automate intake summaries and next-step communication while keeping clinical approval in the loop.',
-    primaryCta: 'Book healthcare ops pilot',
-    secondaryCta: 'See intake automation flow',
+    primaryCta: 'Book healthcare demo',
+    secondaryCta: 'Join healthcare waitlist',
     proof: 'Best for: clinics and specialty practices tightening patient conversion and continuity.',
+    copySlots: ['H1-MED-v{week}', 'SUB-MED-v{week}', 'PROOF-MED-v{week}', 'CTA-MED-v{week}'],
+    utmCampaign: 'aia30-healthcare',
   },
   {
     segment: 'REALTORS',
+    leadSegment: 'realtor' as const,
     hook: 'High-intent buyers are usually lost in the first 15 minutes of response lag.',
     support: 'Score and route inquiries instantly so agents focus on the opportunities most likely to close.',
-    primaryCta: 'Book real estate pilot',
-    secondaryCta: 'See lead routing logic',
+    primaryCta: 'Book realtor demo',
+    secondaryCta: 'Join realtor waitlist',
     proof: 'Best for: brokerages optimizing lead response speed and agent bandwidth.',
+    copySlots: ['H1-REA-v{week}', 'SUB-REA-v{week}', 'PROOF-REA-v{week}', 'CTA-REA-v{week}'],
+    utmCampaign: 'aia30-realtors',
   },
 ]
 
@@ -145,6 +155,39 @@ const analyticsHandoff = [
   'Track `paid_creative_expand` when users open a social concept card or copy block.',
   'Track `email_template_export` when launch ops copies email module content for deployment.',
   'Attach `campaign_source`, `campaign_segment`, and `creative_format` UTM fields on all CTA links.',
+]
+
+const waveOneGuardrails = [
+  { parameter: 'Launch date', value: '2026-04-20 (Monday)' },
+  { parameter: 'Week-1 channel mix', value: 'Organic-first execution only' },
+  { parameter: 'Week-1 paid ceiling', value: '$0 paid spend (no exception)' },
+  { parameter: 'Week-2 paid test', value: 'Up to $2,500 only if baseline gates are met' },
+]
+
+const baselineGateThresholds = [
+  { metric: 'Email open rate', threshold: '>= 35%', source: 'Email provider campaign report' },
+  { metric: 'Organic CTR', threshold: '>= 1.5%', source: 'Session + UTM click-through events' },
+  { metric: 'Landing conversion rate', threshold: '>= 4.0%', source: 'Primary CTA conversion events' },
+]
+
+const dailyKpiSnapshotFields = [
+  'Send date + segment volume',
+  'Email open rate and click-through rate',
+  'Organic impressions, clicks, and CTR',
+  'Landing sessions, conversion rate, and total demo bookings',
+]
+
+const checkpointCadence = [
+  {
+    checkpoint: 'D+2 checkpoint',
+    action: 'Post early baseline trend with pass/fail gate status and spend hold confirmation.',
+    destinations: ['[AIA-30](/AIA/issues/AIA-30)', '[AIA-23](/AIA/issues/AIA-23)'],
+  },
+  {
+    checkpoint: 'D+5 checkpoint',
+    action: 'Post week-1 baseline summary and week-2 paid unlock decision with supporting KPI evidence.',
+    destinations: ['[AIA-30](/AIA/issues/AIA-30)', '[AIA-23](/AIA/issues/AIA-23)'],
+  },
 ]
 
 const implementationSteps = [
@@ -219,13 +262,13 @@ export default function Home() {
           </ul>
           <div className={styles.heroActions}>
             <a href="/pricing" className={styles.primaryAction}>
-              Start your 7-day pilot
+              Book a demo
             </a>
-            <a href="/workflows" className={styles.secondaryAction}>
-              See workflow examples
+            <a href="/pricing" className={styles.secondaryAction}>
+              Join waitlist
             </a>
           </div>
-          <p className={styles.actionMeta}>No credit card. Guided rollout support included.</p>
+          <p className={styles.actionMeta}>Demo-first flow with waitlist fallback for campaign wave scheduling.</p>
           <div className={styles.heroSignalGrid}>
             {heroSignals.map((signal) => (
               <article key={signal.label} className={styles.heroSignal}>
@@ -265,7 +308,10 @@ export default function Home() {
         <section className={styles.segmentSection}>
           <div className={`${styles.sectionHeader} ${styles.reveal}`}>
             <h2>Segmented hero campaign modules</h2>
-            <p>Three launch-ready hero variants aligned to core campaign audiences for [AIA-30](/AIA/issues/AIA-30).</p>
+            <p>
+              Three launch-ready hero variants aligned to core campaign audiences for [AIA-30](/AIA/issues/AIA-30),
+              each with weekly A/B copy slots.
+            </p>
           </div>
           <div className={styles.segmentGrid}>
             {segmentHeroVariants.map((variant) => (
@@ -273,15 +319,23 @@ export default function Home() {
                 <p className={styles.segmentTag}>{variant.segment}</p>
                 <h3>{variant.hook}</h3>
                 <p className={styles.segmentSupport}>{variant.support}</p>
-                <div className={styles.segmentActions}>
-                  <button type="button" className={styles.segmentPrimary}>
-                    {variant.primaryCta}
-                  </button>
-                  <button type="button" className={styles.segmentSecondary}>
-                    {variant.secondaryCta}
-                  </button>
-                </div>
+                <LeadCaptureForm
+                  segment={variant.leadSegment}
+                  primaryCta={variant.primaryCta}
+                  secondaryCta={variant.secondaryCta}
+                  utmCampaign={variant.utmCampaign}
+                  utmSource="landing_page"
+                  utmMedium="organic"
+                />
                 <p className={styles.segmentProof}>{variant.proof}</p>
+                <div className={styles.segmentSlotBlock}>
+                  <p className={styles.segmentSlotTitle}>Weekly A/B copy slots</p>
+                  <ul className={styles.segmentSlotList}>
+                    {variant.copySlots.map((slot) => (
+                      <li key={slot}>{slot}</li>
+                    ))}
+                  </ul>
+                </div>
               </article>
             ))}
           </div>
@@ -380,6 +434,60 @@ export default function Home() {
               <ul>
                 {analyticsHandoff.map((line) => (
                   <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section className={styles.waveSection}>
+          <div className={`${styles.sectionHeader} ${styles.reveal}`}>
+            <h2>Wave-1 execution board (CEO-approved)</h2>
+            <p>
+              Execution guardrails for launch week with explicit KPI gates to control when paid testing is unlocked.
+              Daily KPI snapshots are required from launch day onward.
+            </p>
+          </div>
+          <div className={styles.waveGrid}>
+            <article className={`${styles.waveCard} ${styles.reveal}`}>
+              <h3>Launch guardrails</h3>
+              <ul>
+                {waveOneGuardrails.map((item) => (
+                  <li key={item.parameter}>
+                    <strong>{item.parameter}:</strong> {item.value}
+                  </li>
+                ))}
+              </ul>
+            </article>
+            <article className={`${styles.waveCard} ${styles.reveal}`}>
+              <h3>Week-1 baseline gate (paid unlock rule)</h3>
+              <ul>
+                {baselineGateThresholds.map((gate) => (
+                  <li key={gate.metric}>
+                    <strong>{gate.metric}</strong> {gate.threshold}
+                    <span className={styles.waveMeta}>Source: {gate.source}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+          <div className={styles.waveGrid}>
+            <article className={`${styles.waveCard} ${styles.reveal}`}>
+              <h3>Daily KPI snapshot format</h3>
+              <ul>
+                {dailyKpiSnapshotFields.map((field) => (
+                  <li key={field}>{field}</li>
+                ))}
+              </ul>
+            </article>
+            <article className={`${styles.waveCard} ${styles.reveal}`}>
+              <h3>Checkpoint routing requirements</h3>
+              <ul>
+                {checkpointCadence.map((checkpoint) => (
+                  <li key={checkpoint.checkpoint}>
+                    <strong>{checkpoint.checkpoint}:</strong> {checkpoint.action}
+                    <span className={styles.waveMeta}>Post to: {checkpoint.destinations.join(' and ')}</span>
+                  </li>
                 ))}
               </ul>
             </article>
