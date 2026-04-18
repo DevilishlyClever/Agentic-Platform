@@ -14,6 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div style={styles.navLinks}>
           <a href="/dashboard" style={styles.navLink}>Overview</a>
           <a href="/dashboard/runs" style={styles.navLink}>Runs</a>
+          <a href="/dashboard/leads" style={styles.navLink}>Leads</a>
           <a href="/dashboard/docs" style={styles.navLink}>API Docs</a>
         </div>
         <form action={logoutAction} style={{ margin: 0 }}>

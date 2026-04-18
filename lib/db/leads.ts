@@ -282,3 +282,12 @@ export async function getDailyMetrics(
     sla_breaches: responseStats.sla_breaches,
   }
 }
+
+export async function getLeadEvents(leadId: string, clientId: string): Promise<LeadEvent[]> {
+  const rows = await sql`
+    SELECT * FROM lead_events
+    WHERE lead_id = ${leadId} AND client_id = ${clientId}
+    ORDER BY created_at DESC
+  `
+  return rows as LeadEvent[]
+}
