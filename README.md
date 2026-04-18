@@ -133,6 +133,122 @@ Requires `X-Webhook-Signature: sha256=<hmac-hex>` header. Returns `202 Accepted`
 
 ---
 
+## Lead Pipeline API
+
+All routes below (except the public ingest endpoint) require `Authorization: Bearer sk_your_api_key`.
+
+### Ingest a lead (authenticated)
+
+```
+POST /api/v1/leads
+```
+
+**Body:**
+```json
+{
+  "segment": "lawyer | doctor | realtor | other",
+  "source": "landing_page | referral | direct | campaign | api",
+  "email": "jane@firm.com",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "company": "Northline Legal",
+  "phone": "+1-555-0100",
+  "message": "Looking to automate contract review",
+  "utmSource": "linkedin",
+  "utmMedium": "paid",
+  "utmCampaign": "aia30-legal",
+  "metadata": {}
+}
+```
+
+`segment` is required. `source` defaults to `"api"`.
+
+**Response `201`:**
+```json
+{ "leadId": "uuid", "stage": "new", "createdAt": "ISO timestamp" }
+```
+
+### Public lead ingest (no API key — landing page forms)
+
+```
+POST /api/v1/leads/public
+```
+
+Uses the `MARKETING_CLIENT_ID` server-side environment variable. `segment` and `email` are required. `source` defaults to `"landing_page"`. Same body shape as authenticated ingest.
+
+**Response `201`:**
+```json
+{ "leadId": "uuid", "stage": "new" }
+```
+
+### List leads
+
+```
+GET /api/v1/leads?segment=lawyer&stage=new&limit=50&offset=0
+```
+
+All query params optional. `limit` max is 200.
+
+**Response:**
+```json
+{
+  "leads": [{ "leadId": "...", "segment": "...", "stage": "new", "email": "...", ... }],
+  "count": 25
+}
+```
+
+### Get a lead
+
+```
+GET /api/v1/leads/{leadId}
+```
+
+### Advance pipeline stage
+
+```
+PATCH /api/v1/leads/{leadId}
+```
+
+**Body:**
+```json
+{ "stage": "contacted | qualified | demo_booked | closed_won | closed_lost", "note": "Left voicemail", "actor": "crm-sync" }
+```
+
+`stage` is required. Automatically computes `response_time_ms` when first advancing from `new` → `contacted` (used for SLA tracking).
+
+**Response:**
+```json
+{ "leadId": "...", "stage": "contacted", "qualified": false, "demoBooked": false, "responseTimeMs": 420000, "firstContactedAt": "...", "updatedAt": "..." }
+```
+
+### Daily lead metrics
+
+```
+GET /api/v1/leads/metrics/daily?date=2026-04-20
+```
+
+`date` defaults to today (UTC). Returns counts, source/segment breakdown, and SLA data.
+
+**Response:**
+```json
+{
+  "date": "2026-04-20",
+  "newLeads": 12,
+  "qualifiedLeads": 3,
+  "demoBooked": 1,
+  "bySource": { "landing_page": 10, "api": 2 },
+  "bySegment": { "lawyer": 7, "realtor": 5 },
+  "sla": {
+    "targetMs": 900000,
+    "avgResponseTimeMs": 420000,
+    "breachCount": 0,
+    "slaMetPercent": 100
+  }
+}
+```
+
+---
+
 ## Workflow Input Examples
 
 ### Legal: Document Review
@@ -253,7 +369,10 @@ Consulting engagements (custom workflow setup, integration, training): $5,000–
 DATABASE_URL=postgres://user:password@host/dbname   # Neon connection string
 ADMIN_SECRET=<openssl rand -hex 32>                 # Admin API access
 ANTHROPIC_API_KEY=sk-ant-...                        # Anthropic API key
+MARKETING_CLIENT_ID=<uuid>                          # Client ID for public landing-page lead ingest (see below)
 ```
+
+`MARKETING_CLIENT_ID` is required for the public lead-capture forms on the landing page. Create a dedicated marketing client first (see below), then set its `id` as this variable.
 
 ### Deploy
 
@@ -279,6 +398,16 @@ curl -X POST https://your-domain.vercel.app/api/internal/admin/clients \
 
 Response includes `api_key` — share this with the client.
 
+For the public landing-page lead forms, create a dedicated marketing client and set its `id` as `MARKETING_CLIENT_ID` in your environment:
+
+```bash
+curl -X POST https://your-domain.vercel.app/api/internal/admin/clients \
+  -H "x-admin-secret: $ADMIN_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Marketing Inbound", "plan": "starter"}'
+# Copy the returned "id" → set as MARKETING_CLIENT_ID env var
+```
+
 ### Create a workflow for a client
 
 ```bash
@@ -302,14 +431,23 @@ Use `workflowId` from the response when calling `/api/v1/workflows/{workflowId}/
 ```
 agentic-platform/
 ├── app/
-│   ├── page.tsx                    # Public landing page
+│   ├── page.tsx                    # Public landing page (segmented hero + lead capture forms)
+│   ├── components/
+│   │   └── LeadCaptureForm.tsx     # Client-side form → /api/v1/leads/public
 │   ├── dashboard/                  # Client self-serve UI
+│   │   ├── leads/                  # Lead pipeline list + detail + stage management
+│   │   └── runs/                   # Run history
 │   └── api/
 │       ├── v1/
 │       │   ├── workflows/[id]/run/ # Execute workflow
 │       │   ├── runs/[id]/          # Poll run status
 │       │   ├── usage/              # Usage metering
-│       │   └── webhooks/[c]/[w]/   # Async webhook trigger
+│       │   ├── webhooks/[c]/[w]/   # Async webhook trigger
+│       │   └── leads/              # Lead pipeline CRUD + metrics
+│       │       ├── route.ts        # POST (ingest), GET (list)
+│       │       ├── public/         # POST (no auth — landing page forms)
+│       │       ├── [leadId]/       # GET (detail), PATCH (advance stage)
+│       │       └── metrics/daily/  # GET daily KPIs + SLA instrumentation
 │       └── internal/admin/
 │           ├── clients/            # Tenant management
 │           └── workflows/          # Workflow config
@@ -317,9 +455,10 @@ agentic-platform/
 │   ├── auth.ts                     # API key auth
 │   ├── db/
 │   │   ├── client.ts               # Neon SQL client
-│   │   ├── schema.sql              # DB schema
+│   │   ├── schema.sql              # DB schema (clients, workflows, runs, leads, lead_events)
 │   │   ├── tenants.ts              # Client/workflow queries
-│   │   └── runs.ts                 # Run tracking
+│   │   ├── runs.ts                 # Run tracking
+│   │   └── leads.ts                # Lead CRUD, stage transitions, daily metrics
 │   ├── engine/
 │   │   └── workflow-runner.ts      # Dispatch + usage metering
 │   └── packages/
