@@ -55,7 +55,7 @@ export async function POST(
   const run = await createRun(client.id, workflow.id, input)
 
   // Fire-and-forget execution (no await)
-  executeWorkflow(workflow, input).catch(console.error)
+  executeWorkflow(workflow, input, { runId: run.id }).catch(console.error)
 
   return NextResponse.json({ runId: run.id, status: 'pending' }, { status: 202 })
 }

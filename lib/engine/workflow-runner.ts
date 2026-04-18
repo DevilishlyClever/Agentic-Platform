@@ -10,15 +10,20 @@ export interface WorkflowResult {
   durationMs: number
 }
 
+interface ExecuteWorkflowOptions {
+  runId?: string
+}
+
 export async function executeWorkflow(
   workflow: Workflow,
-  input: Record<string, unknown>
+  input: Record<string, unknown>,
+  options: ExecuteWorkflowOptions = {}
 ): Promise<WorkflowResult> {
-  const run = await createRun(workflow.client_id, workflow.id, input)
+  const runId = options.runId ?? (await createRun(workflow.client_id, workflow.id, input)).id
   const startedAt = Date.now()
 
   try {
-    await updateRun(run.id, { status: 'running' })
+    await updateRun(runId, { status: 'running' })
 
     let output: Record<string, unknown>
     let tokensUsed = 0
@@ -36,13 +41,13 @@ export async function executeWorkflow(
     }
 
     const durationMs = Date.now() - startedAt
-    await updateRun(run.id, { status: 'done', output, tokens_used: tokensUsed, duration_ms: durationMs })
+    await updateRun(runId, { status: 'done', output, tokens_used: tokensUsed, duration_ms: durationMs })
 
-    return { runId: run.id, output, tokensUsed, durationMs }
+    return { runId, output, tokensUsed, durationMs }
   } catch (err) {
     const durationMs = Date.now() - startedAt
     const error = err instanceof Error ? err.message : String(err)
-    await updateRun(run.id, { status: 'failed', error, duration_ms: durationMs })
+    await updateRun(runId, { status: 'failed', error, duration_ms: durationMs })
     throw err
   }
 }
