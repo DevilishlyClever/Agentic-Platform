@@ -127,6 +127,15 @@ export default function WorkflowsPage() {
           </div>
         ))}
       </section>
+
+      {/* Bottom CTA */}
+      <section style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '64px 24px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', margin: '0 0 12px' }}>Ready to put these to work?</h2>
+        <p style={{ fontSize: 16, color: '#475569', margin: '0 0 32px' }}>Book a demo or join the waitlist — we&apos;ll have you running in under a day.</p>
+        <a href="/#get-started" style={{ display: 'inline-block', background: '#2563eb', color: '#fff', padding: '13px 32px', borderRadius: 8, textDecoration: 'none', fontSize: 16, fontWeight: 700 }}>
+          Get started →
+        </a>
+      </section>
     </div>
   )
 }
