@@ -67,6 +67,6 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err)
     console.error('[leads/public] createLead failed:', detail)
-    return NextResponse.json({ error: 'Internal error', detail }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
