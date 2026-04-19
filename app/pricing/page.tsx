@@ -13,6 +13,7 @@ const plans = [
       'Email support',
     ],
     cta: 'Get started',
+    ctaHref: '/#get-started',
     highlight: false,
   },
   {
@@ -30,6 +31,7 @@ const plans = [
       'Custom workflow configuration',
     ],
     cta: 'Start Pro',
+    ctaHref: '/#get-started',
     highlight: true,
   },
   {
@@ -47,6 +49,7 @@ const plans = [
       'Dedicated account manager',
     ],
     cta: 'Contact us',
+    ctaHref: '/#get-started',
     highlight: false,
   },
 ]
@@ -99,7 +102,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <a href="/dashboard" style={{
+            <a href={plan.ctaHref} style={{
               display: 'block',
               textAlign: 'center',
               background: plan.highlight ? '#2563eb' : '#fff',

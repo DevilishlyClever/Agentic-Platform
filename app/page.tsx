@@ -305,7 +305,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={styles.segmentSection}>
+        <section id="get-started" className={styles.segmentSection}>
           <div className={`${styles.sectionHeader} ${styles.reveal}`}>
             <h2>Segmented hero campaign modules</h2>
             <p>
