@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createLead } from '@/lib/db/leads'
 import type { LeadSegment, LeadSource } from '@/lib/db/leads'
+import { notifyNewLead } from '@/lib/notify'
 
 // Public lead ingest — no API key required.
 // Used by landing page forms. The server uses MARKETING_CLIENT_ID
@@ -63,6 +64,8 @@ export async function POST(request: NextRequest) {
         ? (metadata as Record<string, unknown>)
         : undefined,
     })
+    // Fire-and-forget — never block the 201 response on email delivery
+    notifyNewLead(lead).catch(() => {})
     return NextResponse.json({ leadId: lead.id, stage: lead.stage }, { status: 201 })
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err)
