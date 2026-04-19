@@ -44,24 +44,29 @@ export async function POST(request: NextRequest) {
       ? (source as LeadSource)
       : 'landing_page'
 
-  const lead = await createLead({
-    clientId,
-    segment: segment as LeadSegment,
-    source: resolvedSource,
-    utmSource: typeof utmSource === 'string' ? utmSource : undefined,
-    utmMedium: typeof utmMedium === 'string' ? utmMedium : undefined,
-    utmCampaign: typeof utmCampaign === 'string' ? utmCampaign : undefined,
-    utmContent: typeof utmContent === 'string' ? utmContent : undefined,
-    firstName: typeof firstName === 'string' ? firstName : undefined,
-    lastName: typeof lastName === 'string' ? lastName : undefined,
-    email,
-    phone: typeof phone === 'string' ? phone : undefined,
-    company: typeof company === 'string' ? company : undefined,
-    message: typeof message === 'string' ? message : undefined,
-    metadata: typeof metadata === 'object' && metadata !== null
-      ? (metadata as Record<string, unknown>)
-      : undefined,
-  })
-
-  return NextResponse.json({ leadId: lead.id, stage: lead.stage }, { status: 201 })
+  try {
+    const lead = await createLead({
+      clientId,
+      segment: segment as LeadSegment,
+      source: resolvedSource,
+      utmSource: typeof utmSource === 'string' ? utmSource : undefined,
+      utmMedium: typeof utmMedium === 'string' ? utmMedium : undefined,
+      utmCampaign: typeof utmCampaign === 'string' ? utmCampaign : undefined,
+      utmContent: typeof utmContent === 'string' ? utmContent : undefined,
+      firstName: typeof firstName === 'string' ? firstName : undefined,
+      lastName: typeof lastName === 'string' ? lastName : undefined,
+      email,
+      phone: typeof phone === 'string' ? phone : undefined,
+      company: typeof company === 'string' ? company : undefined,
+      message: typeof message === 'string' ? message : undefined,
+      metadata: typeof metadata === 'object' && metadata !== null
+        ? (metadata as Record<string, unknown>)
+        : undefined,
+    })
+    return NextResponse.json({ leadId: lead.id, stage: lead.stage }, { status: 201 })
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err)
+    console.error('[leads/public] createLead failed:', detail)
+    return NextResponse.json({ error: 'Internal error', detail }, { status: 500 })
+  }
 }
